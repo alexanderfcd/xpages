@@ -1,0 +1,27 @@
+{
+  "name": "xpages",
+  "version": "0.1.0",
+  "description": "Generate website/s from json",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^3.1.9",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "commander": "^11.1.0",
+    "csso": "^5.0.5",
+    "html-minifier-terser": "^7.2.0",
+    "node-fetch": "^3.3.2",
+    "sharp": "^0.33.3",
+    "terser": "^5.30.2",
+    "yargs": "^17.7.2"
+  },
+  "bin": {
+    "xpages": "./cli/cli.js"
+  }
+}
