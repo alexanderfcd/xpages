@@ -50,3 +50,5 @@ jobs:
         with:
           sarif_file: eslint-results.sarif
           wait-for-processing: true
+      - name: Prettier Action
+        uses: creyD/prettier_action@v4.6
