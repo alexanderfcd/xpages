@@ -1,8 +1,4 @@
-// eslint.config.js
- 
-
-
- [
+[
 	{
 		files: ["**/*.js"],
 		rules: {
