@@ -4,7 +4,7 @@ export default defineConfig([
 	{
 		rules: {
 			semi: "error",
-			"prefer-const": "error",
-		},
-	},
+			"prefer-const": "error"
+		}
+	}
 ]);
