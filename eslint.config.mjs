@@ -1,11 +1,14 @@
-import { defineConfig } from "eslint/config";
-import { defineFlatConfig } from 'eslint-flat-config-utils';
+import pluginJs from "@eslint/js";
+import tseslint from "typescript-eslint";
 
-export default defineFlatConfig([
-	{
-		rules: {
-			semi: "error",
-			"prefer-const": "error",
-		},
-	},
-]);
+export default [
+  pluginJs.configs.recommended,
+  ...tseslint.configs.recommended,
+  {
+    languageOptions: {
+      globals: {
+        browser: "readonly"
+      }
+    }
+  }
+];
