@@ -5,9 +5,9 @@ export default [
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    languageOptions: {
-      globals: {
-        browser: "readonly"
+    "languageOptions": {
+      "globals": {
+        "browser": "readonly"
       }
     }
   }
