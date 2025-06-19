@@ -1,6 +1,7 @@
 import { defineConfig } from "eslint/config";
+import { defineFlatConfig } from 'eslint-flat-config-utils';
 
-export default defineConfig([
+export default defineFlatConfig([
 	{
 		rules: {
 			semi: "error",
