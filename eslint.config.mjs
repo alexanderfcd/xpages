@@ -1,14 +1,9 @@
-import pluginJs from "@eslint/js";
-import tseslint from "typescript-eslint";
-
 export default [
-  pluginJs.configs.recommended,
-  ...tseslint.configs.recommended,
   {
-    "languageOptions": {
-      "globals": {
-        "browser": "readonly"
-      }
-    }
-  }
+    files: ['**/*.js'],
+    rules: {
+      semi: ['error', 'always'],
+      quotes: ['error', 'single'],
+    },
+  },
 ];
