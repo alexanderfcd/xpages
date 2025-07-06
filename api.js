@@ -1,18 +1,34 @@
-
 const fs = require('fs');
 const path = require('path');
 const ejs = require('ejs');
 const config = require('./config');
 const interceptors = require('./api-event-interceptors');
 
-const getDir = dir => (dir.includes(__dirname) ? dir : `${__dirname}/${dir}`).replace(/[\/\\]/g,path.sep);
+const getDir = dir => {
+    // Normalize the input directory path first for a reliable check
+    const normalizedDir = dir.replace(/[\/\\]/g, path.sep);
+    // Normalize __dirname as well, as it might contain mixed separators on Windows
+    const normalized__dirname = __dirname.replace(/[\/\\]/g, path.sep);
+    // Check if the normalized dir already starts with the normalized __dirname
+    if (normalizedDir.startsWith(normalized__dirname)) {
+        // If it does, it might be an absolute path already containing __dirname, or __dirname itself
+        return normalizedDir;
+    }
+    // Prepend __dirname if it's not already part of the path
+    // Ensure no double separators if normalizedDir was empty or just a filename
+    if (normalizedDir.startsWith(path.sep)) {
+        return `${normalized__dirname}${normalizedDir}`.replace(/[\/\\]/g, path.sep);
+    }
+    return `${normalized__dirname}${path.sep}${normalizedDir}`.replace(/[\/\\]/g, path.sep);
+};
+
 const emptyDir = dirPath => {
     dirPath = getDir(dirPath);
 
     if(!fs.existsSync(dirPath)) {
         return;
     }
-    const dirContents = fs.readdirSync(dirPath); 
+    const dirContents = fs.readdirSync(dirPath);
 
     for (const fileOrDirPath of dirContents) {
         try {
@@ -33,13 +49,13 @@ const _renderSingle = async (conf = example) => {
         conf = await interceptors.onBeforeItemRender(conf, {path});
 
     }
-    copyFolder(`templates${path.sep}${conf.template}${path.sep}assets`, `${conf.targetFolder}${path.sep}assets`);
+    await copyFolder(`templates${path.sep}${conf.template}${path.sep}assets`, `${conf.targetFolder}${path.sep}assets`); // Added await
     await renderTemplateFiles(conf);
 }
 
 const render = async (conf = example) => {
     emptyDir(`${config.output}${path.sep}global-assets`);
-    copyFolder(`global-assets`, `global-assets`);
+    await copyFolder(`global-assets`, `global-assets`); // Added await
 
     if(!conf.length) {
      conf = [conf];
@@ -63,7 +79,7 @@ const pageTitle = function(file, data) {
 }
 
 const renderTemplateFiles = async (conf = example) => {
- 
+
 
     emptyDir((conf.targetFolder));
 
@@ -74,7 +90,7 @@ const renderTemplateFiles = async (conf = example) => {
         let filesAnalized = [];
         if(interceptors.filesAnalize) {
             filesAnalized = interceptors.filesAnalize(files, conf, {path});
- 
+
         }
         let count = 0;
         for(let file of files) {
@@ -85,15 +101,15 @@ const renderTemplateFiles = async (conf = example) => {
                  conf.templateData.__path = path;
 
                  const fileName = file.split(path.sep).pop()
-                  
+
                  let targetFile = `${config.output}${path.sep}${conf.targetFolder}${path.sep}${fileName}`;
 
-                 let targt = targetFile; 
+                 let targt = targetFile;
                 conf.templateData.pageTitle = pageTitle(fileName, conf.templateData);
                 conf.templateData.template = conf.template;
 
-                 
-    
+
+
 
 
                 ejs.renderFile(file, conf.templateData, {}, async function(err, str){
@@ -111,7 +127,7 @@ const renderTemplateFiles = async (conf = example) => {
                         }
                     }
 
-                     
+
                     str = await minify(str, {
                         collapseWhitespace: true,
                         html5: true,
@@ -121,7 +137,7 @@ const renderTemplateFiles = async (conf = example) => {
                         removeComments: true,
                         removeEmptyAttributes: true,
                       });
-                    
+
                     fs.writeFile(getDir(targt), str, function (err) {
                         if (err) throw err;
                         resolve(true)
@@ -159,7 +175,7 @@ const minifyJS = async arr => {
         let code = fs.readFileSync(arr[i], 'utf8');
         let result = await minify(code, { sourceMap: false });
         fs.writeFileSync(arr[i], result.code);
-    
+
     }
 }
 
@@ -169,29 +185,29 @@ const minifyCSS =   arr => {
         let code = fs.readFileSync(arr[i], 'utf8');
         let result = minify(code);
         fs.writeFileSync(arr[i], result.css);
-    
+
     }
 }
 
 
 
-const minifyAssets = target => {
+const minifyAssets = async target => { // Made async
     target = getDir(target);
-    
+
     const allFiles = getFiles(target)
-    
+
     const js = allFiles.filter(file => file.includes('.js'));
     const css = allFiles.filter(file => file.includes('.css'));
 
-    minifyJS(js);
-    minifyCSS(css);
+    await minifyJS(js); // Added await
+    minifyCSS(css); // minifyCSS is currently sync, can be awaited if it becomes async
 
 
-    
- 
+
+
 }
 
-const copyFolder = (from, to) => {
+const copyFolder = async (from, to) => { // Made async
     let target =  `${config.output}/${to}`;
     target = target.trim().replace(/\/\//g, "/");
 
@@ -201,7 +217,7 @@ const copyFolder = (from, to) => {
 
     console.log('minifying assets...');
 
-    minifyAssets(target);
+    await minifyAssets(target); // Added await
 
 
 }
@@ -240,6 +256,5 @@ module.exports = {
     emptyDir,
     copyFolder,
     render,
-    renderTemplateFiles,
-    exampleData: example
+    renderTemplateFiles
 }
