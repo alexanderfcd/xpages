@@ -7,13 +7,13 @@ const {
     copyFolder,
     renderTemplateFiles,
     render,
-} = require('../src/index');
+} = require('./index.js');
 
-jest.mock('../src/config', () => ({
+jest.mock('./config.js', () => ({
     output: 'dist'
 }));
 
-jest.mock('../src/api-event-interceptors', () => ({
+jest.mock('./api-event-interceptors.js', () => ({
     onBeforeItemRender: jest.fn((conf) => Promise.resolve(conf)),
     onFilesList: jest.fn((res) => res),
     filesAnalize: jest.fn((files) => files),
@@ -34,7 +34,7 @@ const sampleConf = {
 describe('Utility functions', () => {
     beforeEach(() => {
         mock({
-            [path.join(__dirname, '../src/templates/basic')]: {
+            [path.join(__dirname, './templates/default')]: {
                 'index.html': '<html><head><title><%= title %></title></head><body></body></html>',
                 'style.css': 'body { color: red; }',
                 'script.js': 'console.log("hi");',
