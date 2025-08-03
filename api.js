@@ -241,5 +241,5 @@ module.exports = {
     copyFolder,
     render,
     renderTemplateFiles,
-    exampleData: example
+ 
 }

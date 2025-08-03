@@ -7,7 +7,7 @@ const {
     copyFolder,
     renderTemplateFiles,
     render,
-} = require('./index.js');
+} = require('./api.js');
 
 jest.mock('./config.js', () => ({
     output: 'dist'
@@ -21,7 +21,7 @@ jest.mock('./api-event-interceptors.js', () => ({
 }));
 
 const sampleConf = {
-    template: 'basic',
+    template: 'default',
     targetFolder: 'output',
     templateData: {
         title: 'Test Page',
@@ -55,6 +55,7 @@ describe('Utility functions', () => {
 
     test('getTemplateFiles returns only .html files', () => {
         const result = getTemplateFiles(sampleConf);
+        console.log(111, result);
         expect(result.length).toBeGreaterThan(0);
         expect(result[0]).toMatch(/\.html$/);
     });
@@ -71,7 +72,7 @@ describe('Utility functions', () => {
 
     test('copyFolder copies folder recursively and minifies assets', () => {
         const output = 'dist/assets';
-        copyFolder('templates/basic/assets', 'assets');
+        copyFolder('./templates/default/assets', 'assets');
         expect(fs.existsSync(path.join(output, 'image.png'))).toBe(true);
     });
 
