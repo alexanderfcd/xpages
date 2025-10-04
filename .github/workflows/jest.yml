@@ -1,6 +1,10 @@
 name: Running Tests
 
-on: [push]
+on:   
+  workflow_run:
+    workflows: ["ESLint"]        # Must match the name of the first workflow
+    types:
+      - completed  
 
 jobs:
   test:
