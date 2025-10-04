@@ -2,7 +2,7 @@ name: Running Tests
 
 on:   
   workflow_run:
-    workflows: ["ESLint"]        # Must match the name of the first workflow
+    workflows: ["ESLint"]
     types:
       - completed  
 
